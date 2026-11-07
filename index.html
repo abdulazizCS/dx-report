@@ -79,7 +79,7 @@ button{font:inherit;color:inherit}
   .stage{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
   .book-wrap{--avail-h:calc(100dvh - 200px);width:min(100%, calc(var(--avail-h) * 1400 / 1981))}
 }
-.page{background:#fff center/cover no-repeat;overflow:hidden;position:relative}
+.page{background:transparent center/cover no-repeat;overflow:hidden;position:relative}
 .page img{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
 /* spine shading */
 .page::after{content:"";position:absolute;inset:0;pointer-events:none}
@@ -181,7 +181,7 @@ body.open .drawer{transform:none;visibility:visible;transition:transform .3s eas
 <main class="stage" id="stage">
   <button class="nav prev" id="navPrev" type="button" aria-label="الصفحة السابقة">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>
-  <div class="book-wrap" id="wrap"><div id="book"></div></div>
+  <div class="book-wrap" id="wrap" dir="ltr"><div id="book"></div></div>
   <button class="nav next" id="navNext" type="button" aria-label="الصفحة التالية">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m15 6-6 6 6 6"/></svg></button>
   <div class="hint" id="hint">اسحب زاوية الصفحة أو استخدم الأسهم ← → للتقليب</div>
@@ -242,8 +242,14 @@ body.open .drawer{transform:none;visibility:visible;transition:transform .3s eas
   ];
   // Arabic books open from the right: the library flips left-to-right,
   // so pages are fed in reverse and the book starts at its last index.
-  const idxOf = p => N - p;           // pdf page -> flip index
-  const pageOf = i => N - i;          // flip index -> pdf page (26 = back cover)
+  // On phones (single page) the library only curls pages going forward, so
+  // keep natural order there and let forward be the curl.
+  const MQ = window.matchMedia('(max-width:760px)');
+  const REV = !MQ.matches;
+  MQ.addEventListener('change', () => location.reload());
+  if (!REV) document.getElementById('hint').textContent = 'اسحب الصفحة من حافتها اليمنى نحو اليسار للتقليب';
+  const idxOf = p => REV ? N - p : p - 1;     // pdf page -> flip index
+  const pageOf = i => REV ? N - i : i + 1;    // flip index -> pdf page (26 = back cover)
 
   const book = document.getElementById('book');
   const frag = document.createDocumentFragment();
@@ -298,9 +304,22 @@ body.open .drawer{transform:none;visibility:visible;transition:transform .3s eas
     minWidth: 260, maxWidth: 1400, minHeight: 368, maxHeight: 1982,
     showCover: true, usePortrait: true, mobileScrollSupport: false,
     maxShadowOpacity: .45, flippingTime: 800, startPage: start,
-    swipeDistance: 30, clickEventForward: true, autoSize: true
+    swipeDistance: 30, clickEventForward: true, autoSize: true,
+    useMouseEvents: REV
   });
   flip.loadFromHTML(pageEls);
+  if (!REV) {
+    // phones: our own swipe handling, so a swipe always plays the full page curl
+    let t0 = null;
+    const wrapEl = document.getElementById('wrap');
+    wrapEl.addEventListener('touchstart', e => { const t = e.touches[0]; t0 = {x: t.clientX, y: t.clientY, at: Date.now()}; }, {passive: true});
+    wrapEl.addEventListener('touchend', e => {
+      if (!t0) return; const t = e.changedTouches[0];
+      const dx = t.clientX - t0.x, dy = t.clientY - t0.y; t0 = null;
+      if (Math.abs(dx) < 40 || Math.abs(dy) > Math.abs(dx)) return;
+      dx < 0 ? next() : prev();
+    });
+  }
 
   const $ = id => document.getElementById(id);
   const slider = $('slider'), count = $('count'), chapterEl = $('chapter');
@@ -310,7 +329,7 @@ body.open .drawer{transform:none;visibility:visible;transition:transform .3s eas
     const i = flip.getCurrentPageIndex();
     const portrait = flip.getOrientation() === 'portrait';
     let ids = [i];
-    if (!portrait && i > 0 && i < N - 1) ids = [i, i + 1];
+    if (REV && !portrait && i > 0 && i < N - 1) ids = [i, i + 1];
     return ids.map(pageOf).filter(p => p <= PAGES).sort((a,b)=>a-b);
   }
   function chapterFor(p){ let c = CHAPTERS[0]; for (const x of CHAPTERS) if (x.p <= p) c = x; return c; }
@@ -324,7 +343,7 @@ body.open .drawer{transform:none;visibility:visible;transition:transform .3s eas
     count.innerHTML = vis.length ? `<strong dir="ltr">${vis.join("–")}</strong> / ${PAGES}` : `<strong>الغلاف الخلفي</strong>`;
     slider.value = first;
     chapterEl.textContent = chapterFor(first).t;
-    const atStart = i >= N - 1, atEnd = i <= 0;
+    const atStart = REV ? i >= N - 1 : i <= 0, atEnd = REV ? i <= 0 : i >= N - 1;
     $('navPrev').disabled = $('mPrev').disabled = atStart;
     $('navNext').disabled = $('mNext').disabled = atEnd;
     document.querySelectorAll('.toc button').forEach(b => b.classList.toggle('cur', +b.dataset.p === chapterFor(first).p));
@@ -343,8 +362,8 @@ body.open .drawer{transform:none;visibility:visible;transition:transform .3s eas
     if (visible().includes(p)) return;
     flip.flip(i);
   }
-  const next = () => flip.flipPrev('bottom');
-  const prev = () => flip.flipNext('bottom');
+  const next = () => REV ? flip.flipPrev('bottom') : flip.flipNext('bottom');
+  const prev = () => REV ? flip.flipNext('bottom') : flip.flipPrev('bottom');
 
   flip.on('flip', update);
   flip.on('changeOrientation', update);
