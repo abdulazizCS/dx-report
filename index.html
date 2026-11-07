@@ -79,6 +79,8 @@ button{font:inherit;color:inherit}
   .stage{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
   .book-wrap{--avail-h:calc(100dvh - 200px);width:min(100%, calc(var(--avail-h) * 1400 / 1981))}
 }
+/* keep the curling corner from poking out above/below the book */
+#book .stf__block{clip-path:inset(0 -100vw 0 -100vw)}
 .page{background:transparent center/cover no-repeat;overflow:hidden;position:relative}
 .page img{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
 /* spine shading */
