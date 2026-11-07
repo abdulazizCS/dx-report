@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>قيمة وأثر 2026</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="التقرير الشامل لمنجزات التحول الرقمي في جامعة جازان — كتاب تفاعلي">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: a night-navy reading room — slim top bar, the open book centred on a circuit-lit stage, a progress rail at the foot. Single dark look taken from the report's own cover. */
+:root{
+  --ink:#0b1440;          /* stage, deepest navy */
+  --navy:#16245f;         /* panels */
+  --navy-2:#22357e;       /* raised controls */
+  --teal:#34c3a2;         /* report accent (circuit lines) */
+  --gold:#f2bb4c;         /* report highlight (years, dates) */
+  --paper:#f4f7fb;        /* text on dark */
+  --muted:#9fb0d6;        /* secondary text */
+  --line:rgba(159,176,214,.18);
+  --font-ui:"Alexandria","Segoe UI",Tahoma,system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{
+  margin:0;font-family:var(--font-ui);color:var(--paper);background:var(--ink);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+   radial-gradient(60% 50% at 50% 55%, rgba(52,195,162,.16), transparent 70%),
+   radial-gradient(40% 40% at 90% 0%, rgba(52,195,162,.12), transparent 70%),
+   linear-gradient(180deg,#0e1a52 0%, var(--ink) 100%);}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* ---------- top bar ---------- */
+.bar{
+  display:flex;align-items:center;gap:12px;
+  padding-block:10px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  border-bottom:1px solid var(--line);
+  background:rgba(11,20,64,.6);backdrop-filter:blur(8px);
+}
+.brand{display:flex;flex-direction:column;min-width:0;flex:1}
+.brand b{font-weight:800;font-size:1.15rem;letter-spacing:0}
+.brand b span{color:var(--teal)}
+.brand small{color:var(--muted);font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tools{display:flex;gap:6px}
+.ibtn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  height:40px;min-width:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);
+  background:var(--navy);cursor:pointer;text-decoration:none;font-size:.85rem;
+  transition:background .2s,border-color .2s;
+}
+.ibtn:hover{background:var(--navy-2);border-color:rgba(52,195,162,.5)}
+.ibtn svg{width:19px;height:19px;flex:none}
+.ibtn.primary{background:var(--teal);color:#062a26;border-color:transparent;font-weight:600}
+.ibtn.primary:hover{background:#4fd6b6}
+@media (max-width:720px){.ibtn .lbl{display:none}.ibtn{padding:0 10px}}
+
+/* ---------- stage ---------- */
+.stage{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;
+  padding-block:18px;padding-left:max(64px,env(safe-area-inset-left,0px));padding-right:max(64px,env(safe-area-inset-right,0px))}
+.book-wrap{
+  --avail-h:calc(100dvh - 190px);
+  width:min(100%, calc(var(--avail-h) * 1400 / 1981 * 2));
+  filter:drop-shadow(0 30px 40px rgba(0,0,0,.45));
+  opacity:0;transition:opacity .6s ease;
+}
+.book-wrap.ready{opacity:1}
+@media (max-width:760px){
+  .stage{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .book-wrap{--avail-h:calc(100dvh - 200px);width:min(100%, calc(var(--avail-h) * 1400 / 1981))}
+}
+.page{background:#fff center/cover no-repeat;overflow:hidden;position:relative}
+.page img{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
+/* spine shading */
+.page::after{content:"";position:absolute;inset:0;pointer-events:none}
+.page.\--left::after{background:linear-gradient(to left,rgba(0,0,0,.22),rgba(0,0,0,0) 7%)}
+.page.\--right::after{background:linear-gradient(to right,rgba(0,0,0,.18),rgba(0,0,0,0) 6%)}
+
+.back-cover{
+  background:linear-gradient(160deg,#3fbf98 0%,#1d6f86 30%,#1b2d7a 70%,#16245f 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;color:#fff;padding:12%;
+}
+.back-cover h2{margin:0;font-size:clamp(1.4rem,3.4vw,2.6rem);font-weight:800}
+.back-cover p{margin:0;color:#d8e3ff;font-size:clamp(.7rem,1.2vw,.95rem);line-height:1.8}
+.back-cover .yr{color:var(--gold);font-weight:600}
+
+/* TOC hotspots on page 3 */
+.hot{position:absolute;right:15%;left:15%;height:6.2%;border-radius:6px;z-index:2;cursor:pointer;display:block}
+.hot:hover{background:rgba(52,195,162,.18);box-shadow:inset 0 0 0 1px rgba(52,195,162,.6)}
+
+/* side arrows */
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;
+  border:1px solid var(--line);background:rgba(22,36,95,.85);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;transition:background .2s,opacity .2s}
+.nav:hover{background:var(--teal);color:#062a26}
+.nav[disabled]{opacity:.25;pointer-events:none}
+.nav svg{width:22px;height:22px}
+.nav.next{left:max(10px,env(safe-area-inset-left,0px))}
+.nav.prev{right:max(10px,env(safe-area-inset-right,0px))}
+@media (max-width:760px){.nav{display:none}}
+
+/* ---------- footer rail ---------- */
+.rail{
+  display:flex;align-items:center;gap:14px;
+  padding-block:10px 14px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.rail .mbtn{display:none}
+@media (max-width:760px){.rail .mbtn{display:inline-flex}}
+.count{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:.9rem;color:var(--muted);min-width:7.5em;text-align:center}
+.count strong{color:var(--paper);font-weight:600}
+input[type=range]{flex:1;min-width:0;accent-color:var(--teal);direction:rtl;height:28px;cursor:pointer}
+.chapter{font-size:.82rem;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:32%}
+@media (max-width:760px){.chapter{display:none}}
+
+/* ---------- drawer (contents + thumbnails) ---------- */
+.scrim{position:fixed;inset:0;background:rgba(3,8,30,.55);z-index:20;opacity:0;pointer-events:none;transition:opacity .25s}
+.drawer{position:fixed;top:0;bottom:0;right:0;width:min(420px,92vw);z-index:21;background:var(--navy);
+  border-left:1px solid var(--line);transform:translateX(105%);transition:transform .3s ease;display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+body.open .scrim{opacity:1;pointer-events:auto}
+body.open .drawer{transform:none}
+.dhead{display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px;flex:1;background:var(--ink);padding:4px;border-radius:10px}
+.tabs button{flex:1;border:0;background:transparent;padding:8px;border-radius:7px;cursor:pointer;color:var(--muted)}
+.tabs button[aria-selected=true]{background:var(--navy-2);color:var(--paper)}
+.dbody{flex:1;overflow:auto;padding:14px 16px}
+.toc{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.toc button{width:100%;display:flex;align-items:center;gap:12px;text-align:right;border:0;background:transparent;
+  padding:12px;border-radius:10px;cursor:pointer;line-height:1.5}
+.toc button:hover,.toc button.cur{background:var(--navy-2)}
+.toc .pn{font-variant-numeric:tabular-nums;color:var(--teal);font-weight:600;min-width:2ch}
+.toc button.cur .pn{color:var(--gold)}
+.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.thumbs button{border:2px solid transparent;border-radius:6px;padding:0;background:none;cursor:pointer;display:flex;flex-direction:column;gap:4px;align-items:stretch}
+.thumbs img{width:100%;aspect-ratio:1400/1981;object-fit:cover;border-radius:4px;display:block;background:#fff}
+.thumbs span{font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums;padding-bottom:2px}
+.thumbs button.cur{border-color:var(--gold)}
+.thumbs button:hover{border-color:var(--teal)}
+
+/* ---------- zoom ---------- */
+.zoom{position:fixed;inset:0;z-index:30;background:rgba(3,8,30,.94);display:flex;flex-direction:column}
+.zoom .zbar{display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+.zoom .zbody{flex:1;overflow:auto;display:flex;justify-content:center;align-items:flex-start;padding:0 16px 24px}
+.zoom .zpages{display:flex;flex-direction:row-reverse;gap:2px;width:min(100%, var(--zw,1100px));transition:width .2s}
+.zoom .zpages img{flex:1;min-width:0;width:100%;height:auto;display:block;background:#fff}
+.hint{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:.75rem;color:var(--muted);white-space:nowrap;pointer-events:none;transition:opacity .6s}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="brand">
+    <b>قيمة <span>وأثر</span></b>
+    <small>التقرير الشامل لمنجزات التحول الرقمي في جامعة جازان · 2006 – 2026م</small>
+  </div>
+  <div class="tools">
+    <button class="ibtn" id="btnToc" type="button" aria-label="المحتويات والصفحات">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span class="lbl">المحتويات</span></button>
+    <button class="ibtn" id="btnZoom" type="button" aria-label="تكبير الصفحة">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M11 8v6M8 11h6"/></svg><span class="lbl">تكبير</span></button>
+    <button class="ibtn" id="btnFs" type="button" aria-label="ملء الشاشة">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span class="lbl">ملء الشاشة</span></button>
+    <a class="ibtn primary" id="btnPdf" href="qeema-wa-athar-2026.pdf" target="_blank" rel="noopener" aria-label="فتح ملف PDF">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg><span class="lbl">PDF</span></a>
+  </div>
+</header>
+
+<main class="stage" id="stage">
+  <button class="nav prev" id="navPrev" type="button" aria-label="الصفحة السابقة">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>
+  <div class="book-wrap" id="wrap"><div id="book"></div></div>
+  <button class="nav next" id="navNext" type="button" aria-label="الصفحة التالية">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m15 6-6 6 6 6"/></svg></button>
+  <div class="hint" id="hint">اسحب زاوية الصفحة أو استخدم الأسهم ← → للتقليب</div>
+</main>
+
+<footer class="rail">
+  <button class="ibtn mbtn" id="mPrev" type="button" aria-label="الصفحة السابقة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>
+  <span class="chapter" id="chapter"></span>
+  <input type="range" id="slider" min="1" max="25" value="1" aria-label="الانتقال إلى صفحة">
+  <span class="count" id="count"></span>
+  <button class="ibtn mbtn" id="mNext" type="button" aria-label="الصفحة التالية"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m15 6-6 6 6 6"/></svg></button>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="المحتويات">
+  <div class="dhead">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tabToc" aria-selected="true" type="button">الفصول</button>
+      <button role="tab" id="tabThumbs" aria-selected="false" type="button">كل الصفحات</button>
+    </div>
+    <button class="ibtn" id="btnClose" type="button" aria-label="إغلاق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="dbody">
+    <ol class="toc" id="toc"></ol>
+    <div class="thumbs" id="thumbs" hidden></div>
+  </div>
+</aside>
+
+<div class="zoom" id="zoom" hidden>
+  <div class="zbar">
+    <div class="tools">
+      <button class="ibtn" id="zIn" type="button" aria-label="تكبير">+</button>
+      <button class="ibtn" id="zOut" type="button" aria-label="تصغير">−</button>
+    </div>
+    <span class="count" id="zCount"></span>
+    <button class="ibtn" id="zClose" type="button" aria-label="إغلاق التكبير"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="zbody"><div class="zpages" id="zPages"></div></div>
+</div>
+
+<script src="page-flip.browser.js"></script>
+<script>
+(function(){
+  const PAGES = 25;            // pages in the PDF
+  const N = PAGES + 1;         // + a back cover so spreads pair like a printed book
+  const pad = n => String(n).padStart(2,'0');
+  const CHAPTERS = [
+    {t:'الغلاف', p:1},
+    {t:'الملخص التنفيذي', p:2},
+    {t:'المحتويات', p:3},
+    {t:'كلمات القيادة', p:4},
+    {t:'رحلة التحول والاستراتيجية والحوكمة', p:7},
+    {t:'المنجزات والمؤشرات الوطنية', p:11},
+    {t:'الممكنات المؤسسية والتقنية والبيانات', p:12},
+    {t:'التعليم وتجربة المستفيد وقصص الأثر', p:16},
+    {t:'الإنسان والمجتمع والابتكار', p:20},
+    {t:'المستقبل والشركاء والمنهجية', p:23},
+  ];
+  // Arabic books open from the right: the library flips left-to-right,
+  // so pages are fed in reverse and the book starts at its last index.
+  const idxOf = p => N - p;           // pdf page -> flip index
+  const pageOf = i => N - i;          // flip index -> pdf page (26 = back cover)
+
+  const book = document.getElementById('book');
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < N; i++) {
+    const p = pageOf(i);
+    const d = document.createElement('div');
+    d.className = 'page';
+    if (p === N) {
+      d.classList.add('back-cover');
+      d.dataset.density = 'hard';
+      d.innerHTML = '<h2>قيمة وأثر</h2><p>التقرير الشامل لمنجزات التحول الرقمي في جامعة جازان<br><span class="yr">2006 – 2026م</span></p><p>جامعة جازان | عمادة الموارد البشرية والتقنية</p>';
+    } else {
+      if (p === 1) d.dataset.density = 'hard';
+      d.style.backgroundImage = `url(thumbs/${pad(p)}.webp)`;
+      const img = document.createElement('img');
+      img.alt = `صفحة ${p}`;
+      img.decoding = 'async';
+      img.dataset.src = `pages/${pad(p)}.webp`;
+      d.appendChild(img);
+      if (p === 3) {
+        const tops = [29.3,35.7,41.9,48.4,54.9,61.4,69.2,76.5];
+        const targets = [2,4,7,11,12,16,20,23];
+        tops.forEach((t,k) => {
+          const a = document.createElement('a');
+          a.className = 'hot'; a.href = '#page-' + targets[k];
+          a.style.top = (t - 3.1) + '%';
+          a.setAttribute('aria-label', 'انتقل إلى صفحة ' + targets[k]);
+          a.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); go(targets[k]); });
+          d.appendChild(a);
+        });
+      }
+    }
+    frag.appendChild(d);
+  }
+  book.appendChild(frag);
+  const pageEls = Array.from(book.children);
+
+  function loadAround(i){
+    for (let k = i - 4; k <= i + 5; k++) {
+      const el = pageEls[k]; if (!el) continue;
+      const img = el.querySelector('img');
+      if (img && !img.src) img.src = img.dataset.src;
+    }
+  }
+
+  const hashPage = () => { const m = /^#page-(\d+)$/.exec(location.hash); return m ? Math.min(PAGES, Math.max(1, +m[1])) : 1; };
+  const start = idxOf(hashPage());
+  loadAround(start);
+
+  const flip = new St.PageFlip(book, {
+    width: 700, height: 991, size: 'stretch',
+    minWidth: 260, maxWidth: 1400, minHeight: 368, maxHeight: 1982,
+    showCover: true, usePortrait: true, mobileScrollSupport: false,
+    maxShadowOpacity: .45, flippingTime: 800, startPage: start,
+    swipeDistance: 30, clickEventForward: true, autoSize: true
+  });
+  flip.loadFromHTML(pageEls);
+
+  const $ = id => document.getElementById(id);
+  const slider = $('slider'), count = $('count'), chapterEl = $('chapter');
+
+  // pages visible right now, in reading order
+  function visible(){
+    const i = flip.getCurrentPageIndex();
+    const portrait = flip.getOrientation() === 'portrait';
+    let ids = [i];
+    if (!portrait && i > 0 && i < N - 1) ids = [i, i + 1];
+    return ids.map(pageOf).filter(p => p <= PAGES).sort((a,b)=>a-b);
+  }
+  function chapterFor(p){ let c = CHAPTERS[0]; for (const x of CHAPTERS) if (x.p <= p) c = x; return c; }
+
+  let syncing = false;
+  function update(){
+    const i = flip.getCurrentPageIndex();
+    loadAround(i);
+    const vis = visible();
+    const first = vis[0] || PAGES;
+    count.innerHTML = vis.length ? `<strong dir="ltr">${vis.join("–")}</strong> / ${PAGES}` : `<strong>الغلاف الخلفي</strong>`;
+    slider.value = first;
+    chapterEl.textContent = chapterFor(first).t;
+    const atStart = i >= N - 1, atEnd = i <= 0;
+    $('navPrev').disabled = $('mPrev').disabled = atStart;
+    $('navNext').disabled = $('mNext').disabled = atEnd;
+    document.querySelectorAll('.toc button').forEach(b => b.classList.toggle('cur', +b.dataset.p === chapterFor(first).p));
+    document.querySelectorAll('.thumbs button').forEach(b => b.classList.toggle('cur', vis.includes(+b.dataset.p)));
+    syncing = true;
+    const h = '#page-' + first;
+    if (location.hash !== h) history.replaceState(null, '', h);
+    syncing = false;
+    if (!$('zoom').hidden) renderZoom();
+  }
+
+  function go(p){
+    p = Math.min(PAGES, Math.max(1, p));
+    const i = idxOf(p);
+    loadAround(i);
+    if (visible().includes(p)) return;
+    flip.flip(i);
+  }
+  const next = () => flip.flipPrev('bottom');
+  const prev = () => flip.flipNext('bottom');
+
+  flip.on('flip', update);
+  flip.on('changeOrientation', update);
+  flip.on('init', () => { update(); $('wrap').classList.add('ready'); });
+  setTimeout(() => { $('wrap').classList.add('ready'); update(); }, 300);
+
+  $('navNext').onclick = $('mNext').onclick = next;
+  $('navPrev').onclick = $('mPrev').onclick = prev;
+  slider.addEventListener('change', () => go(+slider.value));
+  window.addEventListener('hashchange', () => { if (!syncing) go(hashPage()); });
+
+  document.addEventListener('keydown', e => {
+    if (e.target.matches('input')) return;
+    if (!$('zoom').hidden && e.key === 'Escape') return closeZoom();
+    if (document.body.classList.contains('open')) { if (e.key === 'Escape') closeDrawer(); return; }
+    if (e.key === 'ArrowLeft' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowRight' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') go(1);
+    else if (e.key === 'End') go(PAGES);
+  });
+
+  // ----- drawer -----
+  const toc = $('toc'), thumbs = $('thumbs');
+  CHAPTERS.forEach(c => {
+    const li = document.createElement('li');
+    li.innerHTML = `<button type="button" data-p="${c.p}"><span class="pn">${pad(c.p)}</span><span>${c.t}</span></button>`;
+    toc.appendChild(li);
+  });
+  for (let p = 1; p <= PAGES; p++) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.dataset.p = p;
+    b.innerHTML = `<img loading="lazy" src="thumbs/${pad(p)}.webp" alt="صفحة ${p}"><span>${pad(p)}</span>`;
+    thumbs.appendChild(b);
+  }
+  [toc, thumbs].forEach(el => el.addEventListener('click', e => {
+    const b = e.target.closest('button[data-p]'); if (!b) return;
+    closeDrawer(); setTimeout(() => go(+b.dataset.p), 250);
+  }));
+  const openDrawer = () => { document.body.classList.add('open'); };
+  const closeDrawer = () => { document.body.classList.remove('open'); };
+  $('btnToc').onclick = openDrawer; $('btnClose').onclick = closeDrawer; $('scrim').onclick = closeDrawer;
+  function tab(showThumbs){
+    $('tabToc').setAttribute('aria-selected', !showThumbs);
+    $('tabThumbs').setAttribute('aria-selected', showThumbs);
+    toc.hidden = showThumbs; thumbs.hidden = !showThumbs;
+  }
+  $('tabToc').onclick = () => tab(false); $('tabThumbs').onclick = () => tab(true);
+
+  // ----- zoom -----
+  let zw = 1100;
+  function renderZoom(){
+    const vis = visible();
+    $('zPages').innerHTML = vis.map(p => `<img src="pages/${pad(p)}.webp" alt="صفحة ${p}">`).join('');
+    $('zPages').style.setProperty('--zw', (zw * (vis.length > 1 ? 1 : .55)) + 'px');
+    $('zCount').textContent = vis.length ? 'صفحة ' + vis.join('–') : '';
+  }
+  function openZoom(){ if (!visible().length) return; $('zoom').hidden = false; renderZoom(); }
+  function closeZoom(){ $('zoom').hidden = true; }
+  $('btnZoom').onclick = openZoom; $('zClose').onclick = closeZoom;
+  $('zIn').onclick = () => { zw = Math.min(3200, zw * 1.3); renderZoom(); };
+  $('zOut').onclick = () => { zw = Math.max(500, zw / 1.3); renderZoom(); };
+  book.addEventListener('dblclick', openZoom);
+
+  // ----- fullscreen -----
+  $('btnFs').onclick = () => {
+    const d = document;
+    try {
+      if (d.fullscreenElement) d.exitFullscreen();
+      else d.documentElement.requestFullscreen().catch(() => {});
+    } catch (e) {}
+  };
+
+  setTimeout(() => { $('hint').style.opacity = 0; }, 6000);
+})();
+</script>
+</body>
+</html>
